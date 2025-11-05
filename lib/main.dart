@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:video/screens/VideoListScreen.dart';
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:provider/provider.dart'; // Importar provider
-import 'package:video/vm/settings_view_model.dart'; // Importar ViewModel
-import 'package:video/vm/video_list_view_model.dart'; // Importar ViewModel
+import 'package:provider/provider.dart';
+import 'package:video/vm/settings_view_model.dart';
+import 'package:video/vm/video_list_view_model.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +23,6 @@ void main() {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  // ... (Tus temas default _defaultDarkTheme y _defaultLightTheme van aquí, sin cambios) ...
   static final _defaultDarkTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
@@ -44,7 +43,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Tu lógica de DynamicColorBuilder se queda EXACTAMENTE IGUAL
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         
@@ -73,7 +71,7 @@ class MainApp extends StatelessWidget {
           theme: theme,
           darkTheme: darkTheme,
           themeMode: ThemeMode.system, 
-          home: VideoListScreen(), // La home sigue siendo la misma
+          home: VideoListScreen(),
         );
       },
     );

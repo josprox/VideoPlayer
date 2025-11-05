@@ -40,7 +40,7 @@ class SettingsScreen extends StatelessWidget {
         final path = viewModel.folderPaths[index];
         final displayPath = path.split(RegExp(r'[/\\]')).last;
 
-        // <-- CAMBIO: Tarjeta con estilo "Outlined"
+        // <-- Tarjeta con estilo "Outlined"
         return Card(
           shape: RoundedRectangleBorder(
             side: BorderSide( // Añade un borde sutil

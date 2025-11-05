@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Importar
-import 'package:video/vm/video_list_view_model.dart'; // Importar
-import 'package:video/widgets/video/video_list_item.dart'; // Importar el widget separado
+import 'package:provider/provider.dart';
+import 'package:video/vm/video_list_view_model.dart';
+import 'package:video/widgets/video/video_list_item.dart';
 import 'package:video/screens/SettingsScreen.dart'; 
 
-// Ya no necesitamos WidgetsBindingObserver aquí
 class VideoListScreen extends StatefulWidget {
   const VideoListScreen({super.key});
 
@@ -18,8 +17,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
   @override
   void initState() {
     super.initState();
-    // La carga inicial ya se hace en el constructor del ViewModel
-    // pero podemos añadir un listener si queremos recargar al volver de settings
   }
 
   Future<void> _goToSettings() async {
@@ -28,8 +25,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
       MaterialPageRoute(builder: (context) => SettingsScreen()),
     );
     
-    // Al volver, le decimos al ViewModel que recargue
-    // Usamos "read" porque estamos en un método, no en build
     // ignore: use_build_context_synchronously
     context.read<VideoListViewModel>().loadVideos();
   }
@@ -72,8 +67,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
     }
 
     if (!viewModel.hasFolders) {
-      // ... Tu mismo widget de "No has añadido carpetas" ...
-      // (Lo puedes mover a su propio archivo de widget también)
       return LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -114,8 +107,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
     }
     
     if (viewModel.videoFiles.isEmpty) {
-      // ... Tu mismo widget de "No se encontraron videos" ...
-      // (También lo puedes mover a su propio archivo)
        return LayoutBuilder(
          builder: (context, constraints) => SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -161,7 +152,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
       itemCount: viewModel.videoFiles.length,
       itemBuilder: (context, index) {
         File videoFile = viewModel.videoFiles[index];
-        // ¡Usamos el nuevo widget importado!
         return VideoListItem(key: ValueKey(videoFile.path), videoFile: videoFile);
       },
     );

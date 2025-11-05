@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video/screens/VideoPlayerScreen.dart'; // Asegúrate que la ruta sea correcta
-import 'package:shimmer/shimmer.dart'; // <-- ¡NUEVO! Importamos Shimmer
+import 'package:video/screens/VideoPlayerScreen.dart';
+import 'package:shimmer/shimmer.dart';
 
 class VideoListItem extends StatefulWidget {
   final File videoFile;
@@ -76,19 +76,17 @@ class VideoListItemState extends State<VideoListItem> {
     return Hero(
       tag: widget.videoFile.path, 
       child: Card(
-        // clipBehavior: Clip.antiAlias, <-- CAMBIO: Lo quitamos de aquí
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), 
         child: InkWell(
           onTap: _playVideo,
-          // <-- CAMBIO: Envolvemos el Stack en ClipRRect
           child: ClipRRect( 
             borderRadius: BorderRadius.circular(12),
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: [
                 // 1. El fondo (miniatura, shimmer o error)
-                _buildThumbnail(), // <-- Lógica actualizada
+                _buildThumbnail(),
                 
                 // 2. El gradiente oscuro
                 Container(
@@ -102,7 +100,7 @@ class VideoListItemState extends State<VideoListItem> {
                   ),
                 ),
 
-                // 3. El texto (sin cambios)
+                // 3. El texto
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Text(
@@ -124,7 +122,6 @@ class VideoListItemState extends State<VideoListItem> {
     );
   }
 
-  // <-- CAMBIO: Lógica de _buildThumbnail() actualizada
   Widget _buildThumbnail() {
     // Caso 1: Hubo un error
     if (_thumbnailError) {
@@ -180,7 +177,7 @@ class VideoListItemState extends State<VideoListItem> {
           );
         },
 
-        // Animación de Fade-in (sin cambios)
+        // Animación de Fade-in
         frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
           if (wasSynchronouslyLoaded) return child;
           return AnimatedOpacity(
@@ -194,8 +191,7 @@ class VideoListItemState extends State<VideoListItem> {
     }
   }
 
-  // <-- ¡NUEVO! Widget para el Shimmer
-  /// NUEVO WIDGET: El placeholder con efecto Shimmer
+  /// WIDGET: El placeholder con efecto Shimmer
   Widget _buildLoadingPlaceholder() {
     final colors = Theme.of(context).colorScheme;
     

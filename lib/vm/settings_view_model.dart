@@ -38,8 +38,6 @@ class SettingsViewModel extends ChangeNotifier {
         await _prefsService.saveFolderPaths(_folderPaths);
         notifyListeners(); // Notifica del cambio en la lista
       } else {
-        // Aquí podrías manejar el feedback de "carpeta duplicada"
-        // (ej. con un bool en el ViewModel y un SnackBar en la UI)
       }
     }
   }

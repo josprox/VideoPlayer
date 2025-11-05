@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:video/services/PreferencesService.dart'; // Asegúrate que la ruta sea correcta
+import 'package:video/services/PreferencesService.dart';
 
 class VideoListViewModel extends ChangeNotifier {
   final PreferencesService _prefsService = PreferencesService();
@@ -62,7 +62,7 @@ class VideoListViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // --- Lógica de Permisos (Movida aquí) ---
+  // --- Lógica de Permisos ---
   Future<void> _requestPermissions() async {
     if (Platform.isAndroid || Platform.isIOS) {
       var status = await Permission.storage.status;
