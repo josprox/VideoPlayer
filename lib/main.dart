@@ -59,7 +59,7 @@ class MainApp extends StatelessWidget {
         }
 
         return MaterialApp(
-          title: 'Mi Reproductor de Video',
+          title: 'Video',
           debugShowCheckedModeBanner: false,
           
           theme: theme,
