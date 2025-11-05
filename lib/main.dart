@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:video/VideoListScreen.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:provider/provider.dart'; // Importar provider
+import 'package:video/settings_view_model.dart'; // Importar ViewModel
+import 'package:video/video_list_view_model.dart'; // Importar ViewModel
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MainApp());
+  
+  // Envolvemos la app en MultiProvider
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+        ChangeNotifierProvider(create: (_) => VideoListViewModel()),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  // Temas de RESPALDO
+  // ... (Tus temas default _defaultDarkTheme y _defaultLightTheme van aquí, sin cambios) ...
   static final _defaultDarkTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
@@ -20,7 +33,6 @@ class MainApp extends StatelessWidget {
     fontFamily: 'Roboto',
   );
 
-  // Es buena práctica tener un respaldo para light mode también
   static final _defaultLightTheme = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
@@ -30,10 +42,9 @@ class MainApp extends StatelessWidget {
     fontFamily: 'Roboto',
   );
 
-
   @override
   Widget build(BuildContext context) {
-    // Usamos DynamicColorBuilder para obtener los colores del sistema
+    // Tu lógica de DynamicColorBuilder se queda EXACTAMENTE IGUAL
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         
@@ -41,7 +52,6 @@ class MainApp extends StatelessWidget {
         ThemeData darkTheme;
 
         if (lightDynamic != null && darkDynamic != null) {
-          // Si hay colores dinámicos (Android 12+), los usuamos
           theme = ThemeData(
             useMaterial3: true,
             colorScheme: lightDynamic,
@@ -53,7 +63,6 @@ class MainApp extends StatelessWidget {
             fontFamily: 'Roboto',
           );
         } else {
-          // Si NO hay, usa tus temas de respaldo
           theme = _defaultLightTheme;
           darkTheme = _defaultDarkTheme;
         }
@@ -61,12 +70,10 @@ class MainApp extends StatelessWidget {
         return MaterialApp(
           title: 'Video',
           debugShowCheckedModeBanner: false,
-          
           theme: theme,
           darkTheme: darkTheme,
           themeMode: ThemeMode.system, 
-          
-          home: VideoListScreen(),
+          home: VideoListScreen(), // La home sigue siendo la misma
         );
       },
     );
