@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Importar
-import 'package:video/settings_view_model.dart'; // Importar
+import 'package:provider/provider.dart';
+import 'package:video/settings_view_model.dart';
 
-class SettingsScreen extends StatelessWidget { // Ahora puede ser StatelessWidget
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // "Observa" los cambios en el ViewModel
     final viewModel = context.watch<SettingsViewModel>();
 
     return Scaffold(
@@ -16,9 +15,8 @@ class SettingsScreen extends StatelessWidget { // Ahora puede ser StatelessWidge
       ),
       body: viewModel.isLoading
           ? Center(child: CircularProgressIndicator())
-          : _buildPathList(context, viewModel), // Pasamos el viewModel
+          : _buildPathList(context, viewModel),
       floatingActionButton: FloatingActionButton.extended(
-        // Llama al método del ViewModel
         onPressed: () => context.read<SettingsViewModel>().pickAndAddFolder(),
         icon: Icon(Icons.add),
         label: Text('Añadir Carpeta'),
@@ -36,14 +34,22 @@ class SettingsScreen extends StatelessWidget { // Ahora puede ser StatelessWidge
       );
     }
 
-    // Usamos viewModel.folderPaths
     return ListView.builder(
       itemCount: viewModel.folderPaths.length,
       itemBuilder: (context, index) {
         final path = viewModel.folderPaths[index];
         final displayPath = path.split(RegExp(r'[/\\]')).last;
 
+        // <-- CAMBIO: Tarjeta con estilo "Outlined"
         return Card(
+          shape: RoundedRectangleBorder(
+            side: BorderSide( // Añade un borde sutil
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          color: Theme.of(context).colorScheme.surface, // Fondo normal
+          elevation: 0, // Sin sombra
           margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           child: ListTile(
             leading: Icon(Icons.folder_copy_outlined, color: Theme.of(context).colorScheme.secondary),
@@ -51,7 +57,6 @@ class SettingsScreen extends StatelessWidget { // Ahora puede ser StatelessWidge
             subtitle: Text(path),
             trailing: IconButton(
               icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
-              // Llama al método del ViewModel
               onPressed: () => context.read<SettingsViewModel>().removePath(path),
             ),
           ),

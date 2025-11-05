@@ -1,24 +1,20 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video/VideoPlayerScreen.dart'; // Asegúrate que la ruta sea correcta
+import 'package:shimmer/shimmer.dart'; // <-- ¡NUEVO! Importamos Shimmer
 
-// Renombrado de _VideoListItem a VideoListItem
 class VideoListItem extends StatefulWidget {
   final File videoFile;
 
-  // Actualiza el constructor
   const VideoListItem({required Key key, required this.videoFile}) : super(key: key);
 
-  // Renombrado de _VideoListItemState a VideoListItemState
   @override
   VideoListItemState createState() => VideoListItemState();
 }
 
-// Renombrado de _VideoListItemState a VideoListItemState
 class VideoListItemState extends State<VideoListItem> {
-  // Instanciamos el plugin de thumbnails
   final _thumbnailPlugin = FcNativeVideoThumbnail();
 
   String? _thumbnailPath;
@@ -28,38 +24,30 @@ class VideoListItemState extends State<VideoListItem> {
   @override
   void initState() {
     super.initState();
-    // Obtenemos el nombre del archivo desde la ruta
     _fileName = widget.videoFile.path.split(Platform.pathSeparator).last;
-    // Iniciamos la generación de la miniatura
     _generateThumbnail();
   }
 
-  /// Genera una miniatura para el video y la guarda en el directorio temporal.
   Future<void> _generateThumbnail() async {
-    // Si ya falló una vez, no reintenta
     if (_thumbnailError) return;
 
     try {
       final tempDir = await getTemporaryDirectory();
-      
-      // Creamos un nombre de archivo único para la miniatura
       final thumbName = 'thumb_${_fileName.hashCode}.webp';
       final destPath = '${tempDir.path}${Platform.pathSeparator}$thumbName';
 
-      // Usamos el plugin para crear el thumbnail
       await _thumbnailPlugin.getVideoThumbnail(
         srcFile: widget.videoFile.path,
         destFile: destPath,
         width: 360,
-        height: 360, // El plugin ajustará el aspect ratio
+        height: 360,
         format: 'webp',
         quality: 75,
       );
 
-      // Si el widget sigue "montado" (visible), actualizamos el estado
       if (mounted) {
         setState(() {
-          _thumbnailPath = destPath; // Guardamos la ruta de la miniatura
+          _thumbnailPath = destPath; 
           _thumbnailError = false; 
         });
       }
@@ -74,7 +62,6 @@ class VideoListItemState extends State<VideoListItem> {
     }
   }
 
-  /// Navega a la pantalla del reproductor de video.
   void _playVideo() {
     Navigator.push(
       context,
@@ -86,58 +73,61 @@ class VideoListItemState extends State<VideoListItem> {
 
   @override
   Widget build(BuildContext context) {
-    // Hero permite la animación de transición a la pantalla del player
     return Hero(
       tag: widget.videoFile.path, 
       child: Card(
-        clipBehavior: Clip.antiAlias,
+        // clipBehavior: Clip.antiAlias, <-- CAMBIO: Lo quitamos de aquí
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), 
         child: InkWell(
           onTap: _playVideo,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              // 1. El fondo (la miniatura o el placeholder)
-              _buildThumbnail(),
-              
-              // 2. El gradiente oscuro en la parte inferior
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.85)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: const [0.5, 1.0], 
+          // <-- CAMBIO: Envolvemos el Stack en ClipRRect
+          child: ClipRRect( 
+            borderRadius: BorderRadius.circular(12),
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                // 1. El fondo (miniatura, shimmer o error)
+                _buildThumbnail(), // <-- Lógica actualizada
+                
+                // 2. El gradiente oscuro
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.85)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: const [0.5, 1.0], 
+                    ),
                   ),
                 ),
-              ),
 
-              // 3. El texto (nombre del archivo)
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  _fileName,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.white, 
-                    fontWeight: FontWeight.bold,
-                    shadows: [Shadow(blurRadius: 2.0, color: Colors.black.withValues(alpha:0.5))]
+                // 3. El texto (sin cambios)
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    _fileName,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.white, 
+                      fontWeight: FontWeight.bold,
+                      shadows: [Shadow(blurRadius: 2.0, color: Colors.black.withValues(alpha: 0.5))]
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  /// Decide qué mostrar: la miniatura, un placeholder de carga o un error.
+  // <-- CAMBIO: Lógica de _buildThumbnail() actualizada
   Widget _buildThumbnail() {
-    // Caso 1: Aún no hay ruta o hubo un error
-    if (_thumbnailPath == null || _thumbnailError) {
+    // Caso 1: Hubo un error
+    if (_thumbnailError) {
       return Container(
         color: Theme.of(context).colorScheme.surfaceContainerHighest, 
         child: Center(
@@ -149,23 +139,25 @@ class VideoListItemState extends State<VideoListItem> {
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 40,
               ),
-              // Si hubo error, muestra un texto
-              if (_thumbnailError) ...[ 
-                SizedBox(height: 8),
-                Text(
-                  "Error cargando",
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant
-                  ),
+              SizedBox(height: 8),
+              Text(
+                "Error cargando",
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant
                 ),
-              ],
+              ),
             ],
           ),
         ),
       );
     } 
     
-    // Caso 2: Tenemos una ruta, mostramos la imagen
+    // Caso 2: Aún no hay ruta (ESTAMOS CARGANDO)
+    if (_thumbnailPath == null) {
+      return _buildLoadingPlaceholder(); // <-- ¡Usamos el Shimmer!
+    } 
+    
+    // Caso 3: Tenemos una ruta, mostramos la imagen
     else {
       return Image.file(
         File(_thumbnailPath!),
@@ -188,7 +180,7 @@ class VideoListItemState extends State<VideoListItem> {
           );
         },
 
-        // Animación de Fade-in para la imagen
+        // Animación de Fade-in (sin cambios)
         frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
           if (wasSynchronouslyLoaded) return child;
           return AnimatedOpacity(
@@ -200,5 +192,20 @@ class VideoListItemState extends State<VideoListItem> {
         },
       );
     }
+  }
+
+  // <-- ¡NUEVO! Widget para el Shimmer
+  /// NUEVO WIDGET: El placeholder con efecto Shimmer
+  Widget _buildLoadingPlaceholder() {
+    final colors = Theme.of(context).colorScheme;
+    
+    return Shimmer.fromColors(
+      baseColor: colors.surfaceContainerHighest,
+      highlightColor: colors.surfaceContainerLowest,
+      child: Container(
+        // El "esqueleto" es solo un contenedor del color base
+        color: colors.surfaceContainerHighest,
+      ),
+    );
   }
 }
