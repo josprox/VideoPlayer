@@ -30,8 +30,10 @@ dependencies:
 
   # Para saber la versión del SDK de Android
   device_info_plus: ^12.2.0
+  
   # Para Picture-in-Picture
   pip_view: ^0.9.7
+  dynamic_color: ^1.8.1
 
 
 dev_dependencies:
