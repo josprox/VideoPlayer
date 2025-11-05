@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   dynamic_color
+  fc_native_video_thumbnail
   permission_handler_windows
 )
 

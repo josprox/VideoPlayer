@@ -3,6 +3,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:video/PreferencesService.dart'; // Importa tu servicio
 
 class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
@@ -37,6 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         await _prefsService.saveFolderPaths(_folderPaths);
       } else {
         // Opcional: Mostrar un SnackBar si la carpeta ya existe
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Esa carpeta ya está en la lista.')),
         );

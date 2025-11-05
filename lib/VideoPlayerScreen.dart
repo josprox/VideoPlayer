@@ -7,7 +7,7 @@ import 'package:chewie/chewie.dart';
 class VideoPlayerScreen extends StatefulWidget {
   final File videoFile;
 
-  const VideoPlayerScreen({Key? key, required this.videoFile}) : super(key: key);
+  const VideoPlayerScreen({super.key, required this.videoFile});
 
   @override
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
