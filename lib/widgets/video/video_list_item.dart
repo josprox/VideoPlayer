@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video/VideoPlayerScreen.dart'; // Asegúrate que la ruta sea correcta
+import 'package:video/screens/VideoPlayerScreen.dart'; // Asegúrate que la ruta sea correcta
 import 'package:shimmer/shimmer.dart'; // <-- ¡NUEVO! Importamos Shimmer
 
 class VideoListItem extends StatefulWidget {

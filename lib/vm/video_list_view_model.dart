@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:video/PreferencesService.dart'; // Asegúrate que la ruta sea correcta
+import 'package:video/services/PreferencesService.dart'; // Asegúrate que la ruta sea correcta
 
 class VideoListViewModel extends ChangeNotifier {
   final PreferencesService _prefsService = PreferencesService();

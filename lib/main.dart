@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:video/VideoListScreen.dart';
+import 'package:video/screens/VideoListScreen.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:provider/provider.dart'; // Importar provider
-import 'package:video/settings_view_model.dart'; // Importar ViewModel
-import 'package:video/video_list_view_model.dart'; // Importar ViewModel
+import 'package:video/vm/settings_view_model.dart'; // Importar ViewModel
+import 'package:video/vm/video_list_view_model.dart'; // Importar ViewModel
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

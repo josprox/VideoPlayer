@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:video/PreferencesService.dart';
+import 'package:video/services/PreferencesService.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   final PreferencesService _prefsService = PreferencesService();

@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Importar
-import 'package:video/video_list_view_model.dart'; // Importar
-import 'package:video/video_list_item.dart'; // Importar el widget separado
-import 'package:video/SettingsScreen.dart'; 
+import 'package:video/vm/video_list_view_model.dart'; // Importar
+import 'package:video/widgets/video/video_list_item.dart'; // Importar el widget separado
+import 'package:video/screens/SettingsScreen.dart'; 
 
 // Ya no necesitamos WidgetsBindingObserver aquí
 class VideoListScreen extends StatefulWidget {
