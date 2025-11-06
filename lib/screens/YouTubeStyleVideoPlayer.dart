@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
@@ -13,7 +12,8 @@ class YouTubeStyleVideoPlayer extends StatefulWidget {
   const YouTubeStyleVideoPlayer({super.key, required this.videoFile});
 
   @override
-  _YouTubeStyleVideoPlayerState createState() => _YouTubeStyleVideoPlayerState();
+  _YouTubeStyleVideoPlayerState createState() =>
+      _YouTubeStyleVideoPlayerState();
 }
 
 class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
@@ -34,8 +34,8 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _initPlayer();
-
     VolumeController().listener((volume) {});
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   Future<void> _initPlayer() async {
@@ -43,8 +43,7 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
     await _videoController.initialize();
 
     _videoController.addListener(() {
-      final isPlaying = _videoController.value.isPlaying;
-      if (isPlaying) {
+      if (_videoController.value.isPlaying) {
         WakelockPlus.enable();
       } else {
         WakelockPlus.disable();
@@ -74,14 +73,16 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
 
   // --- Gestos ---
   void _onDoubleTapLeft() {
-    final target = _videoController.value.position - const Duration(seconds: 10);
+    final target =
+        _videoController.value.position - const Duration(seconds: 10);
     _videoController.seekTo(target >= Duration.zero ? target : Duration.zero);
     setState(() => _overlayLabel = '« 10s');
     _clearOverlayLabel();
   }
 
   void _onDoubleTapRight() {
-    final target = _videoController.value.position + const Duration(seconds: 10);
+    final target =
+        _videoController.value.position + const Duration(seconds: 10);
     final max = _videoController.value.duration;
     _videoController.seekTo(target <= max ? target : max);
     setState(() => _overlayLabel = '10s »');
@@ -95,19 +96,18 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
 
   void _onVerticalDragStart(DragStartDetails details) {
     _verticalDragStartY = details.localPosition.dy;
-    _changingVolume = details.localPosition.dx > (MediaQuery.of(context).size.width / 2);
+    _changingVolume =
+        details.localPosition.dx > (MediaQuery.of(context).size.width / 2);
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) async {
     final delta = (_verticalDragStartY - details.localPosition.dy) / 300;
     if (_changingVolume) {
-      final current = await VolumeController().getVolume();
-      var next = (current + delta).clamp(0.0, 1.0);
-      VolumeController().setVolume(next);
+      final v = await VolumeController().getVolume();
+      VolumeController().setVolume((v + delta).clamp(0.0, 1.0));
     } else {
-      final current = await ScreenBrightness().current;
-      var next = (current + delta).clamp(0.0, 1.0);
-      await ScreenBrightness().setScreenBrightness(next);
+      final b = await ScreenBrightness().current;
+      ScreenBrightness().setScreenBrightness((b + delta).clamp(0.0, 1.0));
     }
   }
 
@@ -125,9 +125,10 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
 
   void _changePlaybackSpeed() async {
     final speeds = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
-    final current = _chewieController?.videoPlayerController.value.playbackSpeed ?? 1.0;
-    final nextIndex = (speeds.indexOf(current) + 1) % speeds.length;
-    await _videoController.setPlaybackSpeed(speeds[nextIndex]);
+    final current =
+        _chewieController?.videoPlayerController.value.playbackSpeed ?? 1.0;
+    final next = (speeds.indexOf(current) + 1) % speeds.length;
+    await _videoController.setPlaybackSpeed(speeds[next]);
     setState(() {});
   }
 
@@ -136,7 +137,8 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
     if (!Platform.isAndroid) return;
 
     if (state == AppLifecycleState.paused) {
-      if (_videoController.value.isInitialized && !_videoController.value.isPlaying) {
+      if (_videoController.value.isInitialized &&
+          !_videoController.value.isPlaying) {
         _videoController.play();
       }
       enterNativePiP();
@@ -153,45 +155,50 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
     WakelockPlus.disable();
     _videoController.dispose();
     _chewieController?.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
 
-  // --- UI helpers ---
+  // --- UI: Controles estilo YouTube ---
   Widget _buildControls() {
-    final position = _videoController.value.position;
-    final duration = _videoController.value.duration;
+    final pos = _videoController.value.position;
+    final dur = _videoController.value.duration;
 
     return AnimatedOpacity(
       opacity: _showControls ? 1 : 0,
       duration: const Duration(milliseconds: 200),
-      child: Column(
-        children: [
-          SafeArea(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  color: Colors.white,
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                Row(children: [
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // --- TOP ---
+            SafeArea(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
                   IconButton(
-                    icon: const Icon(Icons.speed),
                     color: Colors.white,
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  IconButton(
+                    color: Colors.white,
+                    icon: const Icon(Icons.speed),
                     onPressed: _changePlaybackSpeed,
                   ),
-                ])
-              ],
+                ],
+              ),
             ),
-          ),
 
-          Expanded(
-            child: Center(
+            // --- PLAY BUTTON ---
+            Center(
               child: IconButton(
                 iconSize: 56,
                 color: Colors.white,
-                icon: Icon(_videoController.value.isPlaying ? Icons.pause_circle : Icons.play_circle),
+                icon: Icon(_videoController.value.isPlaying
+                    ? Icons.pause_circle
+                    : Icons.play_circle),
                 onPressed: () {
                   if (_videoController.value.isPlaying) {
                     _videoController.pause();
@@ -202,62 +209,73 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
                 },
               ),
             ),
-          ),
 
-          Column(
-            children: [
-              VideoProgressIndicator(
-                _videoController,
-                allowScrubbing: true,
-                colors: VideoProgressColors(playedColor: Colors.red),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(_formatDuration(position), style: const TextStyle(color: Colors.white)),
-                    Text(_formatDuration(duration), style: const TextStyle(color: Colors.white)),
-                  ],
+            // --- BOTTOM: PROGRESS + TIMES ---
+            Column(
+              children: [
+                VideoProgressIndicator(
+                  _videoController,
+                  allowScrubbing: true,
+                  colors: VideoProgressColors(playedColor: Colors.red),
                 ),
-              ),
-            ],
-          ),
-        ],
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_formatDuration(pos),
+                          style: const TextStyle(color: Colors.white)),
+                      Text(_formatDuration(dur),
+                          style: const TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   String _formatDuration(Duration d) {
-    twoDigits(int n) => n.toString().padLeft(2, '0');
-    final minutes = twoDigits(d.inMinutes.remainder(60));
-    final seconds = twoDigits(d.inSeconds.remainder(60));
-    final hours = d.inHours;
-    return hours > 0 ? '$hours:$minutes:$seconds' : '$minutes:$seconds';
+    String two(int n) => n.toString().padLeft(2, '0');
+    final h = d.inHours;
+    final m = two(d.inMinutes.remainder(60));
+    final s = two(d.inSeconds.remainder(60));
+    return h > 0 ? '$h:$m:$s' : '$m:$s';
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
-      appBar: isInPiP
-          ? null
-          : null,
       body: Center(
-        child: _chewieController != null && _chewieController!.videoPlayerController.value.isInitialized
+        child: _chewieController != null &&
+                _chewieController!.videoPlayerController.value.isInitialized
             ? GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: _onTap,
-                onDoubleTap: () {},
                 onVerticalDragStart: _onVerticalDragStart,
                 onVerticalDragUpdate: _onVerticalDragUpdate,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Chewie(controller: _chewieController!),
+                    // --- VIDEO ---
+                    Positioned.fill(
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: SizedBox(
+                          width: _videoController.value.size.width,
+                          height: _videoController.value.size.height,
+                          child: Chewie(controller: _chewieController!),
+                        ),
+                      ),
+                    ),
 
+                    // --- DOUBLE TAP ZONES ---
                     Positioned.fill(
                       child: Row(
                         children: [
@@ -277,24 +295,24 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
                       ),
                     ),
 
+                    // --- SEEK LABEL ---
                     if (_overlayLabel != null)
                       Positioned(top: 40, child: _buildOverlayLabel()),
 
-                    Positioned.fill(child: _buildControls()),
+                    // --- CONTROLES ---
+                    IgnorePointer(
+                      ignoring: !_showControls,
+                      child: Positioned.fill(
+                        child: Container(
+                          color: Colors.black26,
+                          child: _buildControls(),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 20),
-                  Text(
-                    'Cargando video...',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
+            : const CircularProgressIndicator(color: Colors.white),
       ),
     );
   }
@@ -303,10 +321,13 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.black45,
+        color: Colors.black54,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(_overlayLabel!, style: const TextStyle(color: Colors.white, fontSize: 16)),
+      child: Text(
+        _overlayLabel!,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
     );
   }
 }
