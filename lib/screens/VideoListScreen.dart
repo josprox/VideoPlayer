@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:video/vm/video_list_view_model.dart';
 import 'package:video/widgets/video/video_list_item.dart';
-import 'package:video/screens/SettingsScreen.dart'; 
+import 'package:video/screens/SettingsScreen.dart';
 
 class VideoListScreen extends StatefulWidget {
   const VideoListScreen({super.key});
@@ -13,7 +13,6 @@ class VideoListScreen extends StatefulWidget {
 }
 
 class _VideoListScreenState extends State<VideoListScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -24,21 +23,40 @@ class _VideoListScreenState extends State<VideoListScreen> {
       context,
       MaterialPageRoute(builder: (context) => SettingsScreen()),
     );
-    
+
     // ignore: use_build_context_synchronously
     context.read<VideoListViewModel>().loadVideos();
   }
 
+  // <-- CAMBIO: Función helper para el padding adaptativo
+  /// Calcula el padding horizontal para la rejilla basado en el ancho de la pantalla.
+  EdgeInsets _calculateGridPadding(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    double horizontalPadding = 12.0; // Padding default para móviles
+
+    if (screenWidth > 1200) {
+      // Pantallas de PC muy anchas: centramos un contenedor de 1200px
+      horizontalPadding = (screenWidth - 1200) / 2;
+    } else if (screenWidth > 600) {
+      // Tablets: usamos un padding mayor
+      horizontalPadding = 24.0;
+    }
+
+    return EdgeInsets.symmetric(
+      horizontal: horizontalPadding,
+      vertical: 16.0, // Un poco más de espacio vertical
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // "Observamos" el ViewModel
     final viewModel = context.watch<VideoListViewModel>();
 
     return Scaffold(
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
-            SliverAppBar.large( 
+            SliverAppBar.large(
               title: Text("Mis Videos"),
               actions: [
                 IconButton(
@@ -47,15 +65,14 @@ class _VideoListScreenState extends State<VideoListScreen> {
                   tooltip: "Configuración",
                 ),
               ],
-              floating: true, 
-              snap: true,      
+              floating: true,
+              snap: true,
             ),
           ];
         },
-        // El onRefresh ahora llama al ViewModel
         body: RefreshIndicator(
-          onRefresh: () => context.read<VideoListViewModel>().loadVideos(), 
-          child: _buildBody(context, viewModel), // Pasamos el viewModel
+          onRefresh: () => context.read<VideoListViewModel>().loadVideos(),
+          child: _buildBody(context, viewModel),
         ),
       ),
     );
@@ -67,6 +84,8 @@ class _VideoListScreenState extends State<VideoListScreen> {
     }
 
     if (!viewModel.hasFolders) {
+      // ... (Tu estado vacío de "No has añadido carpetas" es perfecto, no necesita cambios)
+      // ... (Está centrado y es claro, ¡excelente UX!)
       return LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -78,16 +97,18 @@ class _VideoListScreenState extends State<VideoListScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.folder_off_outlined, size: 80, color: Theme.of(context).colorScheme.secondary),
+                    Icon(Icons.folder_off_outlined,
+                        size: 80,
+                        color: Theme.of(context).colorScheme.secondary),
                     SizedBox(height: 20),
                     Text(
-                      "No has añadido carpetas", 
+                      "No has añadido carpetas",
                       style: Theme.of(context).textTheme.headlineSmall,
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Ve a Configuración para empezar a escanear tus videos.", 
+                      "Ve a Configuración para empezar a escanear tus videos.",
                       style: Theme.of(context).textTheme.bodyLarge,
                       textAlign: TextAlign.center,
                     ),
@@ -105,10 +126,11 @@ class _VideoListScreenState extends State<VideoListScreen> {
         ),
       );
     }
-    
+
     if (viewModel.videoFiles.isEmpty) {
-       return LayoutBuilder(
-         builder: (context, constraints) => SingleChildScrollView(
+      // ... (Tu estado vacío de "No se encontraron videos" también es perfecto)
+      return LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
@@ -116,12 +138,14 @@ class _VideoListScreenState extends State<VideoListScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
-                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.video_library_outlined, size: 80, color: Theme.of(context).colorScheme.secondary),
+                    Icon(Icons.video_library_outlined,
+                        size: 80,
+                        color: Theme.of(context).colorScheme.secondary),
                     SizedBox(height: 20),
                     Text(
-                      "No se encontraron videos", 
+                      "No se encontraron videos",
                       style: Theme.of(context).textTheme.headlineSmall,
                       textAlign: TextAlign.center,
                     ),
@@ -136,23 +160,26 @@ class _VideoListScreenState extends State<VideoListScreen> {
               ),
             ),
           ),
-         ),
-       );
+        ),
+      );
     }
 
     // --- Layout de Rejilla (GridView) ---
     return GridView.builder(
-      padding: EdgeInsets.all(12.0),
+      // <-- CAMBIO: Aplicamos el padding adaptativo
+      padding: _calculateGridPadding(context),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 250, 
-        childAspectRatio: 16 / 9, 
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+        maxCrossAxisExtent: 250, // Esto sigue siendo bueno y flexible
+        childAspectRatio:
+            16 / 10, // <-- CAMBIO: Un poco más de espacio vertical para el título
+        crossAxisSpacing: 12, // <-- CAMBIO: Un poco más de espacio
+        mainAxisSpacing: 12, // <-- CAMBIO: Un poco más de espacio
       ),
       itemCount: viewModel.videoFiles.length,
       itemBuilder: (context, index) {
         File videoFile = viewModel.videoFiles[index];
-        return VideoListItem(key: ValueKey(videoFile.path), videoFile: videoFile);
+        return VideoListItem(
+            key: ValueKey(videoFile.path), videoFile: videoFile);
       },
     );
   }

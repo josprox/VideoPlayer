@@ -2,14 +2,14 @@ import 'dart:io';
 import 'package:fc_native_video_thumbnail/fc_native_video_thumbnail.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video/screens/VideoPlayerScreen.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:video/screens/YouTubeStyleVideoPlayer.dart';
 
 class VideoListItem extends StatefulWidget {
   final File videoFile;
 
-  const VideoListItem({required Key key, required this.videoFile}) : super(key: key);
+  const VideoListItem({required Key key, required this.videoFile})
+      : super(key: key);
 
   @override
   VideoListItemState createState() => VideoListItemState();
@@ -20,8 +20,8 @@ class VideoListItemState extends State<VideoListItem> {
 
   String? _thumbnailPath;
   late String _fileName;
-  bool _thumbnailError = false; 
-  
+  bool _thumbnailError = false;
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +30,7 @@ class VideoListItemState extends State<VideoListItem> {
   }
 
   Future<void> _generateThumbnail() async {
+    // ... (Tu lógica de _generateThumbnail es excelente, no necesita cambios)
     if (_thumbnailError) return;
 
     try {
@@ -48,16 +49,16 @@ class VideoListItemState extends State<VideoListItem> {
 
       if (mounted) {
         setState(() {
-          _thumbnailPath = destPath; 
-          _thumbnailError = false; 
+          _thumbnailPath = destPath;
+          _thumbnailError = false;
         });
       }
     } catch (e) {
       debugPrint("ERROR al generar thumbnail para $_fileName: $e");
       if (mounted) {
         setState(() {
-          _thumbnailError = true; 
-          _thumbnailPath = null; 
+          _thumbnailError = true;
+          _thumbnailPath = null;
         });
       }
     }
@@ -67,7 +68,8 @@ class VideoListItemState extends State<VideoListItem> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => YouTubeStyleVideoPlayer(videoFile: widget.videoFile),
+        builder: (context) =>
+            YouTubeStyleVideoPlayer(videoFile: widget.videoFile),
       ),
     );
   }
@@ -75,42 +77,63 @@ class VideoListItemState extends State<VideoListItem> {
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: widget.videoFile.path, 
+      tag: widget.videoFile.path, // ¡La animación Hero es muy expresiva! Bien.
       child: Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), 
+        // <-- CAMBIO: Principios de M3
+        elevation: 0, // 1. Usar elevación 0
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest, // 2. Usar elevación tonal
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12)),
         child: InkWell(
           onTap: _playVideo,
-          child: ClipRRect( 
+          borderRadius:
+              BorderRadius.circular(12), // Para que el ripple coincida
+          child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: [
                 // 1. El fondo (miniatura, shimmer o error)
+                //    Tu widget _buildThumbnail es perfecto.
                 _buildThumbnail(),
-                
-                // 2. El gradiente oscuro
+
+                // 2. El gradiente oscuro (scrim)
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.85)],
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.7) // <-- CAMBIO: Más sutil
+                      ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      stops: const [0.5, 1.0], 
+                      stops: const [0.4, 1.0], // <-- CAMBIO: Empezar un poco antes
                     ),
                   ),
                 ),
 
                 // 3. El texto
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
+                Positioned(
+                  // <-- CAMBIO: Más control sobre la posición
+                  bottom: 8.0,
+                  left: 10.0,
+                  right: 10.0,
                   child: Text(
                     _fileName,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white, 
-                      fontWeight: FontWeight.bold,
-                      shadows: [Shadow(blurRadius: 2.0, color: Colors.black.withValues(alpha: 0.5))]
-                    ),
+                    // <-- CAMBIO: Tipografía semántica de M3
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 3.0,
+                              color: Colors.black.withOpacity(0.5),
+                              offset: Offset(0, 1),
+                            )
+                          ],
+                        ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -124,10 +147,13 @@ class VideoListItemState extends State<VideoListItem> {
   }
 
   Widget _buildThumbnail() {
+    // ... (Tu lógica de _buildThumbnail con Shimmer y estados de error es perfecta)
+    // ... (¡No la cambies, es excelente UX!)
+
     // Caso 1: Hubo un error
     if (_thumbnailError) {
       return Container(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest, 
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -141,31 +167,30 @@ class VideoListItemState extends State<VideoListItem> {
               Text(
                 "Error cargando",
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant
-                ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ],
           ),
         ),
       );
-    } 
-    
+    }
+
     // Caso 2: Aún no hay ruta (ESTAMOS CARGANDO)
     if (_thumbnailPath == null) {
-      return _buildLoadingPlaceholder(); // <-- ¡Usamos el Shimmer!
-    } 
-    
+      return _buildLoadingPlaceholder(); // <-- ¡Shimmer es genial!
+    }
+
     // Caso 3: Tenemos una ruta, mostramos la imagen
     else {
       return Image.file(
         File(_thumbnailPath!),
-        fit: BoxFit.cover, 
-        width: double.infinity, 
+        fit: BoxFit.cover,
+        width: double.infinity,
         height: double.infinity,
-        
         // Muestra un ícono de error si la imagen no se puede cargar
         errorBuilder: (context, error, stackTrace) {
-          debugPrint("ERROR al cargar imagen thumbnail de la ruta $_thumbnailPath: $error");
+          debugPrint(
+              "ERROR al cargar imagen thumbnail de la ruta $_thumbnailPath: $error");
           return Container(
             color: Theme.of(context).colorScheme.errorContainer,
             child: Center(
@@ -178,7 +203,7 @@ class VideoListItemState extends State<VideoListItem> {
           );
         },
 
-        // Animación de Fade-in
+        // Animación de Fade-in (¡Esto es muy M3 Expressive, excelente!)
         frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
           if (wasSynchronouslyLoaded) return child;
           return AnimatedOpacity(
@@ -195,7 +220,7 @@ class VideoListItemState extends State<VideoListItem> {
   /// WIDGET: El placeholder con efecto Shimmer
   Widget _buildLoadingPlaceholder() {
     final colors = Theme.of(context).colorScheme;
-    
+
     return Shimmer.fromColors(
       baseColor: colors.surfaceContainerHighest,
       highlightColor: colors.surfaceContainerLowest,
