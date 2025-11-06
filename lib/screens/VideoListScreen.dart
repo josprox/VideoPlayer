@@ -65,8 +65,9 @@ class _VideoListScreenState extends State<VideoListScreen> {
                   tooltip: "Configuración",
                 ),
               ],
-              floating: true,
-              snap: true,
+              floating: false,
+              snap: false,
+              pinned: true,
             ),
           ];
         },
