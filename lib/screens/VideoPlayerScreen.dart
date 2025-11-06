@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final File videoFile;
@@ -25,6 +26,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WakelockPlus.enable();
     _initPlayer();
   }
 
@@ -59,7 +61,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
     if (!Platform.isAndroid) return;
 
     if (state == AppLifecycleState.paused) {
-      if (_videoController.value.isInitialized && !_videoController.value.isPlaying) {
+      if (_videoController.value.isInitialized &&
+          !_videoController.value.isPlaying) {
         _videoController.play();
       }
       enterNativePiP();
@@ -73,6 +76,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    WakelockPlus.disable();
     _videoController.dispose();
     _chewieController?.dispose();
     super.dispose();
@@ -99,7 +103,8 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen>
               ],
             ),
       body: Center(
-        child: _chewieController != null &&
+        child:
+            _chewieController != null &&
                 _chewieController!.videoPlayerController.value.isInitialized
             ? Chewie(controller: _chewieController!)
             : Column(

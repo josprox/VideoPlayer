@@ -43,6 +43,12 @@ dependencies:
   provider: ^6.1.5+1
   # Efecto shimmer para placeholders
   shimmer: ^3.0.0
+  # Evitar que la pantalla se apague durante la reproducción de video
+  wakelock_plus: ^1.4.0
+  # Control de volumen del dispositivo
+  volume_controller: ^2.0.3
+  # Control del brillo de la pantalla
+  screen_brightness: 2.1.7
 
 dev_dependencies:
   flutter_test:

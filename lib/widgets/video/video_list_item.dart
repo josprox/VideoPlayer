@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video/screens/VideoPlayerScreen.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:video/screens/YouTubeStyleVideoPlayer.dart';
 
 class VideoListItem extends StatefulWidget {
   final File videoFile;
@@ -66,7 +67,7 @@ class VideoListItemState extends State<VideoListItem> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => VideoPlayerScreen(videoFile: widget.videoFile),
+        builder: (context) => YouTubeStyleVideoPlayer(videoFile: widget.videoFile),
       ),
     );
   }
