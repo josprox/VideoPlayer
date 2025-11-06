@@ -8,9 +8,6 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:volume_controller/volume_controller.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 
-/// YouTube-style player WITHOUT foreground service / notifications.
-/// Limpio, estable y completamente funcional para reproducción local.
-
 class YouTubeStyleVideoPlayer extends StatefulWidget {
   final File videoFile;
   const YouTubeStyleVideoPlayer({super.key, required this.videoFile});
@@ -27,7 +24,7 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
   static const pipChannel = MethodChannel('pip_channel');
   bool _showControls = true;
   bool isInPiP = false;
-  bool _userInteracting = false;
+  final bool _userInteracting = false;
   double _verticalDragStartY = 0;
   bool _changingVolume = false;
   String? _overlayLabel;
@@ -232,7 +229,7 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
   }
 
   String _formatDuration(Duration d) {
-    final twoDigits = (int n) => n.toString().padLeft(2, '0');
+    twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes = twoDigits(d.inMinutes.remainder(60));
     final seconds = twoDigits(d.inSeconds.remainder(60));
     final hours = d.inHours;
