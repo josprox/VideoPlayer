@@ -58,6 +58,12 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
       showControls: false,
     );
 
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted && _showControls) {
+        setState(() => _showControls = false);
+      }
+    });
+
     setState(() {});
   }
 
@@ -101,13 +107,16 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
   }
 
   void _onVerticalDragUpdate(DragUpdateDetails details) async {
-    final delta = (_verticalDragStartY - details.localPosition.dy) / 300;
+    final delta = (_verticalDragStartY - details.localPosition.dy) / 1200;
+
     if (_changingVolume) {
-      final v = await VolumeController().getVolume();
-      VolumeController().setVolume((v + delta).clamp(0.0, 1.0));
+      double current = await VolumeController().getVolume();
+      double next = (current + delta).clamp(0.0, 1.0);
+      VolumeController().setVolume(next);
     } else {
-      final b = await ScreenBrightness().current;
-      ScreenBrightness().setScreenBrightness((b + delta).clamp(0.0, 1.0));
+      double current = await ScreenBrightness().current;
+      double next = (current + delta).clamp(0.0, 1.0);
+      ScreenBrightness().setScreenBrightness(next);
     }
   }
 
@@ -187,6 +196,11 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
                     icon: const Icon(Icons.speed),
                     onPressed: _changePlaybackSpeed,
                   ),
+                  IconButton(
+                    color: Colors.white,
+                    icon: const Icon(Icons.picture_in_picture_alt),
+                    onPressed: enterNativePiP,
+                  ),
                 ],
               ),
             ),
@@ -196,9 +210,11 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
               child: IconButton(
                 iconSize: 56,
                 color: Colors.white,
-                icon: Icon(_videoController.value.isPlaying
-                    ? Icons.pause_circle
-                    : Icons.play_circle),
+                icon: Icon(
+                  _videoController.value.isPlaying
+                      ? Icons.pause_circle
+                      : Icons.play_circle,
+                ),
                 onPressed: () {
                   if (_videoController.value.isPlaying) {
                     _videoController.pause();
@@ -219,15 +235,21 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
                   colors: VideoProgressColors(playedColor: Colors.red),
                 ),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(_formatDuration(pos),
-                          style: const TextStyle(color: Colors.white)),
-                      Text(_formatDuration(dur),
-                          style: const TextStyle(color: Colors.white)),
+                      Text(
+                        _formatDuration(pos),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      Text(
+                        _formatDuration(dur),
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ],
                   ),
                 ),
@@ -253,7 +275,8 @@ class _YouTubeStyleVideoPlayerState extends State<YouTubeStyleVideoPlayer>
       backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       body: Center(
-        child: _chewieController != null &&
+        child:
+            _chewieController != null &&
                 _chewieController!.videoPlayerController.value.isInitialized
             ? GestureDetector(
                 behavior: HitTestBehavior.opaque,
