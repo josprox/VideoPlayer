@@ -1,6 +1,6 @@
 name: video
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -11,10 +11,10 @@ dependencies:
     sdk: flutter
 
   # Para reproducir los videos
-  video_player: ^2.10.0 
-  
+  video_player: ^2.10.0
+
   # (Opcional pero recomendado) Brinda controles de UI listos para el video_player
-  chewie: ^1.13.0 
+  chewie: ^1.13.0
 
   # Para seleccionar la carpeta (funciona en móvil y escritorio)
   file_picker: ^10.3.3
@@ -30,14 +30,19 @@ dependencies:
 
   # Para saber la versión del SDK de Android
   device_info_plus: ^12.2.0
-  
+
   # Para Picture-in-Picture
   pip_view: ^0.9.7
-  dynamic_color: ^1.8.1
-  fc_native_video_thumbnail: ^0.17.2
-  provider: ^6.1.5+1
-  shimmer: ^3.0.0
 
+  # Colores dinámicos (Material You)
+  dynamic_color: ^1.8.1
+
+  # Miniaturas de video nativas
+  fc_native_video_thumbnail: ^0.17.2
+  # Estado y gestión
+  provider: ^6.1.5+1
+  # Efecto shimmer para placeholders
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
