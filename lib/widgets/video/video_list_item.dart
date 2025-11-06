@@ -30,7 +30,6 @@ class VideoListItemState extends State<VideoListItem> {
   }
 
   Future<void> _generateThumbnail() async {
-    // ... (Tu lógica de _generateThumbnail es excelente, no necesita cambios)
     if (_thumbnailError) return;
 
     try {
@@ -77,9 +76,9 @@ class VideoListItemState extends State<VideoListItem> {
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: widget.videoFile.path, // ¡La animación Hero es muy expresiva! Bien.
+      tag: widget.videoFile.path,
       child: Card(
-        // <-- CAMBIO: Principios de M3
+        // <-- Principios de M3
         elevation: 0, // 1. Usar elevación 0
         color: Theme.of(context)
             .colorScheme
@@ -96,7 +95,6 @@ class VideoListItemState extends State<VideoListItem> {
               alignment: Alignment.bottomCenter,
               children: [
                 // 1. El fondo (miniatura, shimmer o error)
-                //    Tu widget _buildThumbnail es perfecto.
                 _buildThumbnail(),
 
                 // 2. El gradiente oscuro (scrim)
@@ -105,24 +103,24 @@ class VideoListItemState extends State<VideoListItem> {
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        Colors.black.withValues(alpha: 0.7) // <-- CAMBIO: Más sutil
+                        Colors.black.withValues(alpha: 0.7)
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      stops: const [0.4, 1.0], // <-- CAMBIO: Empezar un poco antes
+                      stops: const [0.4, 1.0], // <-- Empezar un poco antes
                     ),
                   ),
                 ),
 
                 // 3. El texto
                 Positioned(
-                  // <-- CAMBIO: Más control sobre la posición
+                  // <--  Más control sobre la posición
                   bottom: 8.0,
                   left: 10.0,
                   right: 10.0,
                   child: Text(
                     _fileName,
-                    // <-- CAMBIO: Tipografía semántica de M3
+                    // <--  Tipografía semántica de M3
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -147,9 +145,6 @@ class VideoListItemState extends State<VideoListItem> {
   }
 
   Widget _buildThumbnail() {
-    // ... (Tu lógica de _buildThumbnail con Shimmer y estados de error es perfecta)
-    // ... (¡No la cambies, es excelente UX!)
-
     // Caso 1: Hubo un error
     if (_thumbnailError) {
       return Container(
@@ -175,9 +170,9 @@ class VideoListItemState extends State<VideoListItem> {
       );
     }
 
-    // Caso 2: Aún no hay ruta (ESTAMOS CARGANDO)
+    // Caso 2: Aún no hay ruta
     if (_thumbnailPath == null) {
-      return _buildLoadingPlaceholder(); // <-- ¡Shimmer es genial!
+      return _buildLoadingPlaceholder();
     }
 
     // Caso 3: Tenemos una ruta, mostramos la imagen
@@ -203,7 +198,7 @@ class VideoListItemState extends State<VideoListItem> {
           );
         },
 
-        // Animación de Fade-in (¡Esto es muy M3 Expressive, excelente!)
+        // Animación de Fade-in
         frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
           if (wasSynchronouslyLoaded) return child;
           return AnimatedOpacity(
