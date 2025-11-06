@@ -105,7 +105,7 @@ class VideoListItemState extends State<VideoListItem> {
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.7) // <-- CAMBIO: Más sutil
+                        Colors.black.withValues(alpha: 0.7) // <-- CAMBIO: Más sutil
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -129,7 +129,7 @@ class VideoListItemState extends State<VideoListItem> {
                           shadows: [
                             Shadow(
                               blurRadius: 3.0,
-                              color: Colors.black.withOpacity(0.5),
+                              color: Colors.black.withValues(alpha: 0.5),
                               offset: Offset(0, 1),
                             )
                           ],

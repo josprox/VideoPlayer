@@ -28,7 +28,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
     context.read<VideoListViewModel>().loadVideos();
   }
 
-  // <-- CAMBIO: Función helper para el padding adaptativo
   /// Calcula el padding horizontal para la rejilla basado en el ancho de la pantalla.
   EdgeInsets _calculateGridPadding(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -85,8 +84,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
     }
 
     if (!viewModel.hasFolders) {
-      // ... (Tu estado vacío de "No has añadido carpetas" es perfecto, no necesita cambios)
-      // ... (Está centrado y es claro, ¡excelente UX!)
       return LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -129,7 +126,6 @@ class _VideoListScreenState extends State<VideoListScreen> {
     }
 
     if (viewModel.videoFiles.isEmpty) {
-      // ... (Tu estado vacío de "No se encontraron videos" también es perfecto)
       return LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -167,14 +163,14 @@ class _VideoListScreenState extends State<VideoListScreen> {
 
     // --- Layout de Rejilla (GridView) ---
     return GridView.builder(
-      // <-- CAMBIO: Aplicamos el padding adaptativo
+      // <-- Aplicamos el padding adaptativo
       padding: _calculateGridPadding(context),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 250, // Esto sigue siendo bueno y flexible
         childAspectRatio:
-            16 / 10, // <-- CAMBIO: Un poco más de espacio vertical para el título
-        crossAxisSpacing: 12, // <-- CAMBIO: Un poco más de espacio
-        mainAxisSpacing: 12, // <-- CAMBIO: Un poco más de espacio
+            16 / 10, // <-- Un poco más de espacio vertical para el título
+        crossAxisSpacing: 12, // <-- Un poco más de espacio
+        mainAxisSpacing: 12, // <-- Un poco más de espacio
       ),
       itemCount: viewModel.videoFiles.length,
       itemBuilder: (context, index) {
